@@ -1,4 +1,4 @@
-package com.pinhaDev.worknest.Services;
+package com.pinhaDev.worknest.services;
 
 import com.pinhaDev.worknest.config.TokenConfig;
 import com.pinhaDev.worknest.dto.LoginRequest;

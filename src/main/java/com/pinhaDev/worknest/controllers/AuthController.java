@@ -1,6 +1,6 @@
 package com.pinhaDev.worknest.controllers;
 
-import com.pinhaDev.worknest.Services.AuthService;
+import com.pinhaDev.worknest.services.AuthService;
 import com.pinhaDev.worknest.dto.LoginRequest;
 import com.pinhaDev.worknest.dto.LoginResponse;
 import com.pinhaDev.worknest.dto.RegisterRequest;
