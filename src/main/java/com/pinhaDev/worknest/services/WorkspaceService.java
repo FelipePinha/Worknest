@@ -2,6 +2,7 @@ package com.pinhaDev.worknest.services;
 
 import com.pinhaDev.worknest.domain.models.WorkspaceMember;
 import com.pinhaDev.worknest.dto.request.CreateWorkspaceRequest;
+import com.pinhaDev.worknest.dto.request.UpdateWorkspaceRequest;
 import com.pinhaDev.worknest.dto.response.WorkspaceResponse;
 import com.pinhaDev.worknest.domain.models.Workspace;
 import com.pinhaDev.worknest.repositories.UserRepository;
@@ -10,6 +11,8 @@ import com.pinhaDev.worknest.repositories.WorkspaceRepository;
 import jakarta.validation.Valid;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.UUID;
 
 @Service
 public class WorkspaceService {
@@ -37,6 +40,19 @@ public class WorkspaceService {
 
        workspaceMemberRepository.save(workspaceMember);
 
-        return new WorkspaceResponse(newWorkspace);
+       return new WorkspaceResponse(newWorkspace);
+    }
+
+    public WorkspaceResponse updateWorkspace(UpdateWorkspaceRequest request, UUID id) {
+        var workspace = workspaceRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Workspace não encontrado"));
+
+        if (request.name() != null) {
+            workspace.setName(request.name());
+        }
+
+        workspaceRepository.save(workspace);
+
+        return new WorkspaceResponse(workspace);
     }
 }
