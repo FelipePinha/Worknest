@@ -1,4 +1,4 @@
-package com.pinhaDev.worknest.dto;
+package com.pinhaDev.worknest.dto.response;
 
 public record LoginResponse(
         String message

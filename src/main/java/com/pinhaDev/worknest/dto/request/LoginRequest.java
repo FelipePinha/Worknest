@@ -1,4 +1,4 @@
-package com.pinhaDev.worknest.dto;
+package com.pinhaDev.worknest.dto.request;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;

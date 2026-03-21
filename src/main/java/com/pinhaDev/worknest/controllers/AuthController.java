@@ -1,10 +1,10 @@
 package com.pinhaDev.worknest.controllers;
 
 import com.pinhaDev.worknest.services.AuthService;
-import com.pinhaDev.worknest.dto.LoginRequest;
-import com.pinhaDev.worknest.dto.LoginResponse;
-import com.pinhaDev.worknest.dto.RegisterRequest;
-import com.pinhaDev.worknest.dto.RegisterResponse;
+import com.pinhaDev.worknest.dto.request.LoginRequest;
+import com.pinhaDev.worknest.dto.response.LoginResponse;
+import com.pinhaDev.worknest.dto.request.RegisterRequest;
+import com.pinhaDev.worknest.dto.response.RegisterResponse;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

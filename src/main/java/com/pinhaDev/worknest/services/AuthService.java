@@ -1,9 +1,9 @@
 package com.pinhaDev.worknest.services;
 
 import com.pinhaDev.worknest.config.TokenConfig;
-import com.pinhaDev.worknest.dto.LoginRequest;
-import com.pinhaDev.worknest.dto.RegisterRequest;
-import com.pinhaDev.worknest.models.User;
+import com.pinhaDev.worknest.dto.request.LoginRequest;
+import com.pinhaDev.worknest.dto.request.RegisterRequest;
+import com.pinhaDev.worknest.domain.models.User;
 import com.pinhaDev.worknest.repositories.UserRepository;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
