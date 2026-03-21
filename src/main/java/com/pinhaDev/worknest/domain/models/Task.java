@@ -1,6 +1,6 @@
-package com.pinhaDev.worknest.models;
+package com.pinhaDev.worknest.domain.models;
 
-import com.pinhaDev.worknest.enums.TaskStatus;
+import com.pinhaDev.worknest.domain.enums.TaskStatus;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -32,7 +32,7 @@ public class Task {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workspace_id")
-    private Workplace workplace;
+    private Workspace workspace;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;

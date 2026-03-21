@@ -1,4 +1,4 @@
-package com.pinhaDev.worknest.models;
+package com.pinhaDev.worknest.domain.models;
 
 import jakarta.persistence.*;
 import lombok.*;

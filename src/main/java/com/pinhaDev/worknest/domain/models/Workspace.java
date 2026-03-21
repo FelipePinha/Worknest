@@ -1,6 +1,5 @@
-package com.pinhaDev.worknest.models;
+package com.pinhaDev.worknest.domain.models;
 
-import com.pinhaDev.worknest.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,26 +13,23 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Builder
-@Table(name = "tb_workspace_members")
-public class WorkspaceMember {
+@Table(name = "tb_workspaces")
+public class Workspace {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "workplace_id")
-    private Workplace workplace;
-
-    @Enumerated(EnumType.STRING)
-    private UserRole role;
+    @Column(nullable = false, length = 255)
+    private String name;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public Workspace(String name) {
+        this.name = name;
+        this.createdAt = LocalDateTime.now();
+    }
 }

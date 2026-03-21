@@ -1,10 +1,10 @@
-package com.pinhaDev.worknest.models;
+package com.pinhaDev.worknest.domain.models;
 
+import com.pinhaDev.worknest.domain.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.UUID;
 
 @Entity
@@ -14,14 +14,22 @@ import java.util.UUID;
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Builder
-@Table(name = "tb_workplaces")
-public class Workplace {
+@Table(name = "tb_workspace_members")
+public class WorkspaceMember {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private UUID id;
 
-    @Column(nullable = false, length = 255)
-    private String name;
+    @ManyToOne
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "workplace_id")
+    private Workspace workspace;
+
+    @Enumerated(EnumType.STRING)
+    private UserRole role;
 
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
