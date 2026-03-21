@@ -29,6 +29,7 @@ public class WorkspaceMember {
     private Workspace workspace;
 
     @Enumerated(EnumType.STRING)
+    @Column(columnDefinition = "user_role")
     private UserRole role;
 
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -36,4 +37,11 @@ public class WorkspaceMember {
 
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
+
+    public WorkspaceMember(User user, Workspace workspace) {
+        this.user = user;
+        this.workspace = workspace;
+        this.role = UserRole.OWNER;
+        this.createdAt = LocalDateTime.now();
+    }
 }
