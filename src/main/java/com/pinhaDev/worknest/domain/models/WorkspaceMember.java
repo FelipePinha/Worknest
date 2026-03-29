@@ -17,19 +17,19 @@ import java.util.UUID;
 @Table(name = "tb_workspace_members")
 public class WorkspaceMember {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     private User user;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "workplace_id")
     private Workspace workspace;
 
     @Enumerated(EnumType.STRING)
-    @Column(columnDefinition = "user_role")
+    @Column(nullable = false)
     private UserRole role;
 
     @Column(name = "created_at", nullable = false, updatable = false)
