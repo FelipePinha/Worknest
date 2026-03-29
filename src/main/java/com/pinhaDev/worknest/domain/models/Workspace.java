@@ -32,10 +32,6 @@ public class Workspace {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public Workspace(String name) {
-        this.name = name;
-    }
-
     @PrePersist
     protected void onCreate() {
         this.createdAt = LocalDateTime.now();
