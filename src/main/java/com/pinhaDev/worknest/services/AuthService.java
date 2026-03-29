@@ -38,16 +38,12 @@ public class AuthService {
         checkIfUserExists(request.email());
 
         var passwordHash = encoder.encode(request.password());
+        var user = User.builder()
+                .email(request.email())
+                .password(passwordHash)
+                .build();
 
-        userRepository.save(
-                new User(
-                    null,
-                    request.email(),
-                    passwordHash,
-                    LocalDateTime.now(),
-                    null
-                )
-        );
+        userRepository.save(user);
     }
 
     public String login(LoginRequest request) {
@@ -64,13 +60,13 @@ public class AuthService {
         return tokenConfig.generateToken(user.getEmail());
     }
 
-    public void checkPasswordConfirmation(String password, String passwordConfirmation) {
+    private void checkPasswordConfirmation(String password, String passwordConfirmation) {
         if(!password.equals(passwordConfirmation)) {
             throw new IllegalArgumentException("As senhas devem ser iguais");
         }
     }
 
-    public void checkIfUserExists(String email) {
+    private void checkIfUserExists(String email) {
         var userExists = userRepository.findByEmail(email);
 
         if(userExists.isPresent()) {
