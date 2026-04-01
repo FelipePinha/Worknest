@@ -34,4 +34,6 @@ public interface WorkspaceMemberRepository extends JpaRepository<WorkspaceMember
             """,
             nativeQuery = true)
     Page<Workspace> findWorkspacesByUserIdAndRole(@Param("userId") UUID userId, @Param("role") UserRole role, Pageable pageable);
+
+    Optional<WorkspaceMember> findByUserIdAndWorkspaceId(UUID userId, UUID workspaceId);
 }
