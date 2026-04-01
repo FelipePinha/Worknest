@@ -2,7 +2,6 @@ package com.pinhaDev.worknest.controllers;
 
 import com.pinhaDev.worknest.dto.request.AddContributorRequest;
 import com.pinhaDev.worknest.dto.request.CreateWorkspaceRequest;
-import com.pinhaDev.worknest.dto.request.DeleteWorkspaceRequest;
 import com.pinhaDev.worknest.dto.request.UpdateWorkspaceRequest;
 import com.pinhaDev.worknest.dto.response.AddContributorResponse;
 import com.pinhaDev.worknest.dto.response.WorkspaceResponse;
@@ -89,11 +88,8 @@ public class WorkspaceController {
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteWorkspace(
-            @PathVariable UUID id,
-            @Valid @RequestBody DeleteWorkspaceRequest request
-    ) {
-        workspaceService.deleteWorkspace(id, request);
+    public ResponseEntity<Void> deleteWorkspace(@PathVariable UUID id) {
+        workspaceService.deleteWorkspace(id);
         return ResponseEntity.noContent().build();
     }
 }
