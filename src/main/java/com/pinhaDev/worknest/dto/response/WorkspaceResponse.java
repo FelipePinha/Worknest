@@ -11,7 +11,7 @@ public record WorkspaceResponse(
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {
-    public WorkspaceResponse(Workspace workplace) {
-        this(workplace.getId(), workplace.getName(), workplace.getCreatedAt(), workplace.getUpdatedAt());
+    public WorkspaceResponse(Workspace workspace) {
+        this(workspace.getId(), workspace.getName(), workspace.getCreatedAt(), workspace.getUpdatedAt());
     }
 }
