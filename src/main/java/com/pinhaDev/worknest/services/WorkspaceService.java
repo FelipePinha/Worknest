@@ -2,10 +2,10 @@ package com.pinhaDev.worknest.services;
 
 import com.pinhaDev.worknest.config.JWTUserData;
 import com.pinhaDev.worknest.domain.enums.UserRole;
+import com.pinhaDev.worknest.domain.models.User;
 import com.pinhaDev.worknest.domain.models.WorkspaceMember;
 import com.pinhaDev.worknest.dto.request.AddContributorRequest;
 import com.pinhaDev.worknest.dto.request.CreateWorkspaceRequest;
-import com.pinhaDev.worknest.dto.request.DeleteWorkspaceRequest;
 import com.pinhaDev.worknest.dto.request.UpdateWorkspaceRequest;
 import com.pinhaDev.worknest.dto.response.AddContributorResponse;
 import com.pinhaDev.worknest.dto.response.WorkspaceResponse;
@@ -38,10 +38,7 @@ public class WorkspaceService {
     public WorkspaceResponse createWorkspace(CreateWorkspaceRequest request) {
         Workspace workspace = Workspace.builder().name(request.name()).build();
 
-        var userData = getLoggedUser();
-
-        var user = userRepository.findByEmail(userData.email()).orElseThrow(() ->
-                new IllegalArgumentException("Usuário não encontrado"));
+        var user = getLoggedUser();
 
        var newWorkspace = workspaceRepository.save(workspace);
        var workspaceMember = new WorkspaceMember(user, newWorkspace);
@@ -53,12 +50,9 @@ public class WorkspaceService {
 
     @Transactional
     public AddContributorResponse addContributor(AddContributorRequest request, UUID workspaceId) {
-        var userData = getLoggedUser();
+        var user = getLoggedUser();
         var workspace = workspaceRepository.findById(workspaceId).orElseThrow(() ->
                 new IllegalArgumentException("Workspace não encontrado"));
-
-        var user = userRepository.findByEmail(userData.email()).orElseThrow(() ->
-                new IllegalArgumentException("Usuário autenticado não encontrado"));
 
         var contributor = userRepository.findByEmail(request.contributorEmail()).orElseThrow(() ->
                 new IllegalArgumentException("Usuário não encontrado"));
@@ -96,9 +90,14 @@ public class WorkspaceService {
         );
     }
 
+    @Transactional
     public WorkspaceResponse updateWorkspace(UpdateWorkspaceRequest request, UUID id) {
+        var user = getLoggedUser();
+
         var workspace = workspaceRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Workspace não encontrado"));
+
+        validateOwner(user.getId(), workspace.getId());
 
         if (request.name() != null) {
             workspace.setName(request.name());
@@ -110,11 +109,12 @@ public class WorkspaceService {
     }
 
     @Transactional
-    public void deleteWorkspace(UUID id, DeleteWorkspaceRequest request) {
-        workspaceMemberRepository.findByUserIdAndWorkspaceIdAndRole(request.userId(), id, UserRole.OWNER)
-                .orElseThrow(() -> new IllegalArgumentException("Você não tem permissão para apagar essa workspace ou ela não existe"));
+    public void deleteWorkspace(UUID workspaceId) {
+        var user = getLoggedUser();
 
-        workspaceRepository.deleteById(id);
+        validateOwner(user.getId(), workspaceId);
+
+        workspaceRepository.deleteById(workspaceId);
     }
 
     public Page<WorkspaceResponse> getUserOwnedWorkspaces(UUID userId, Pageable pageable) {
@@ -146,10 +146,13 @@ public class WorkspaceService {
                 .orElseThrow(() -> new IllegalArgumentException("Sem permissão"));
     }
 
-    private JWTUserData getLoggedUser() {
-        return (JWTUserData) SecurityContextHolder
+    private User getLoggedUser() {
+        var userData = (JWTUserData) SecurityContextHolder
                 .getContext()
                 .getAuthentication()
                 .getPrincipal();
+
+        return userRepository.findByEmail(userData.email()).orElseThrow(() ->
+                new IllegalArgumentException("Usuário autenticado não encontrado"));
     }
 }
