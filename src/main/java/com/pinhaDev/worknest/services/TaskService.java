@@ -7,6 +7,7 @@ import com.pinhaDev.worknest.domain.models.Task;
 import com.pinhaDev.worknest.domain.models.User;
 import com.pinhaDev.worknest.dto.request.CreateTaskRequest;
 import com.pinhaDev.worknest.dto.request.UpdateTaskRequest;
+import com.pinhaDev.worknest.dto.request.UpdateTaskStatusRequest;
 import com.pinhaDev.worknest.repositories.TaskRepository;
 import com.pinhaDev.worknest.repositories.UserRepository;
 import com.pinhaDev.worknest.repositories.WorkspaceMemberRepository;
@@ -74,9 +75,26 @@ public class TaskService {
         taskRepository.deleteById(taskId);
     }
 
+    public Task updateTaskStatus(UUID workspaceId, UUID taskId, UpdateTaskStatusRequest request) {
+        var user = getLoggedUser();
+        userExistsInWorkspace(user.getId(), workspaceId);
+
+        var task = taskRepository.findByWorkspaceIdAndId(workspaceId, taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task não existe nesta workspace"));
+
+        task.setStatus(request.status());
+
+        return taskRepository.save(task);
+    }
+
     private void validateOwner(UUID userId, UUID workspaceId) {
         workspaceMemberRepository.findByUserIdAndWorkspaceIdAndRole(userId, workspaceId, UserRole.OWNER)
                 .orElseThrow(() -> new IllegalArgumentException("Sem permissão"));
+    }
+
+    private void userExistsInWorkspace(UUID userId, UUID workspaceId) {
+        workspaceMemberRepository.findByUserIdAndWorkspaceId(userId, workspaceId)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não faz parte desta workspace"));
     }
 
     private User getLoggedUser() {
