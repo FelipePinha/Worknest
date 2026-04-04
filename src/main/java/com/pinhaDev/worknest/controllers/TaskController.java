@@ -1,9 +1,9 @@
 package com.pinhaDev.worknest.controllers;
 
-import com.pinhaDev.worknest.domain.models.Task;
 import com.pinhaDev.worknest.dto.request.CreateTaskRequest;
 import com.pinhaDev.worknest.dto.request.UpdateTaskRequest;
 import com.pinhaDev.worknest.dto.request.UpdateTaskStatusRequest;
+import com.pinhaDev.worknest.dto.response.TaskResponse;
 import com.pinhaDev.worknest.services.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/workspace")
+@RequestMapping("/workspaces")
 public class TaskController {
 
     private final TaskService taskService;
@@ -23,7 +23,7 @@ public class TaskController {
     }
 
     @PostMapping("/{workspaceId}/tasks")
-    public ResponseEntity<Task> createTask(
+    public ResponseEntity<TaskResponse> createTask(
             @PathVariable UUID workspaceId,
             @Valid @RequestBody CreateTaskRequest request)
     {
@@ -33,7 +33,7 @@ public class TaskController {
     }
 
     @PutMapping("/{workspaceId}/tasks/{taskId}")
-    public ResponseEntity<Task> updateTask(
+    public ResponseEntity<TaskResponse> updateTask(
             @PathVariable UUID workspaceId,
             @PathVariable UUID taskId,
             @Valid @RequestBody UpdateTaskRequest request
@@ -44,7 +44,7 @@ public class TaskController {
     }
 
     @PatchMapping("/{workspaceId}/tasks/{taskId}/status")
-    public ResponseEntity<Task> updateTaskStatus(
+    public ResponseEntity<TaskResponse> updateTaskStatus(
             @PathVariable UUID workspaceId,
             @PathVariable UUID taskId,
             @Valid @RequestBody UpdateTaskStatusRequest request
