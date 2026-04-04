@@ -91,10 +91,10 @@ public class WorkspaceService {
     }
 
     @Transactional
-    public WorkspaceResponse updateWorkspace(UpdateWorkspaceRequest request, UUID id) {
+    public WorkspaceResponse updateWorkspace(UpdateWorkspaceRequest request, UUID WorkspaceId) {
         var user = getLoggedUser();
 
-        var workspace = workspaceRepository.findById(id)
+        var workspace = workspaceRepository.findById(WorkspaceId)
                 .orElseThrow(() -> new IllegalArgumentException("Workspace não encontrado"));
 
         validateOwner(user.getId(), workspace.getId());
@@ -117,26 +117,29 @@ public class WorkspaceService {
         workspaceRepository.deleteById(workspaceId);
     }
 
-    public Page<WorkspaceResponse> getUserOwnedWorkspaces(UUID userId, Pageable pageable) {
-        return workspaceMemberRepository.findWorkspacesByUserIdAndRole(userId, UserRole.OWNER, pageable)
+    public Page<WorkspaceResponse> getUserOwnedWorkspaces(Pageable pageable) {
+        var user = getLoggedUser();
+
+        return workspaceMemberRepository.findWorkspacesByUserIdAndRole(user.getId(), UserRole.OWNER, pageable)
                 .map(WorkspaceResponse::new);
     }
 
-    public Page<WorkspaceResponse> getUserContributorWorkspaces(UUID userId, Pageable pageable) {
-        return workspaceMemberRepository.findWorkspacesByUserIdAndRole(userId, UserRole.CONTRIBUTOR, pageable)
+    public Page<WorkspaceResponse> getUserContributorWorkspaces(Pageable pageable) {
+        var user = getLoggedUser();
+
+        return workspaceMemberRepository.findWorkspacesByUserIdAndRole(user.getId(), UserRole.CONTRIBUTOR, pageable)
                 .map(WorkspaceResponse::new);
     }
 
-    public WorkspaceResponse getUserOwnedWorkspace(UUID userId, UUID workspaceId) {
-        WorkspaceMember member = workspaceMemberRepository.findByUserIdAndWorkspaceIdAndRole(userId, workspaceId, UserRole.OWNER)
-                .orElseThrow(() -> new IllegalArgumentException("Workspace não encontrada ou você não tem permissão de proprietário"));
+    public WorkspaceResponse getUserWorkspace(UUID workspaceId) {
+        var user = getLoggedUser();
 
-        return new WorkspaceResponse(member.getWorkspace());
-    }
-
-    public WorkspaceResponse getUserContributorWorkspace(UUID userId, UUID workspaceId) {
-        WorkspaceMember member = workspaceMemberRepository.findByUserIdAndWorkspaceIdAndRole(userId, workspaceId, UserRole.CONTRIBUTOR)
-                .orElseThrow(() -> new IllegalArgumentException("Workspace não encontrada"));
+        WorkspaceMember member = workspaceMemberRepository.findByUserIdAndWorkspaceId(
+                        user.getId(),
+                        workspaceId
+                )
+                .orElseThrow(() ->
+                        new IllegalArgumentException("Workspace não encontrada ou você não é membro"));
 
         return new WorkspaceResponse(member.getWorkspace());
     }

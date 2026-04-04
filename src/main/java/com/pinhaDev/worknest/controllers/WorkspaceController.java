@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.UUID;
 
 @RestController
-@RequestMapping("/workspace")
+@RequestMapping("/workspaces")
 public class WorkspaceController {
 
     private final WorkspaceService workspaceService;
@@ -40,40 +40,27 @@ public class WorkspaceController {
         return ResponseEntity.status(HttpStatus.CREATED).body(contributor);
     }
 
-
-    @GetMapping("/user/{userId}/owned")
+    @GetMapping("/owned")
     public ResponseEntity<Page<WorkspaceResponse>> getUserOwnedWorkspaces(
-            @PathVariable UUID userId,
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        Page<WorkspaceResponse> workspaces = workspaceService.getUserOwnedWorkspaces(userId, pageable);
+        Page<WorkspaceResponse> workspaces = workspaceService.getUserOwnedWorkspaces(pageable);
         return ResponseEntity.ok(workspaces);
     }
 
-    @GetMapping("/user/{userId}/contributor")
+    @GetMapping("/contributing")
     public ResponseEntity<Page<WorkspaceResponse>> getUserContributorWorkspaces(
-            @PathVariable UUID userId,
             @PageableDefault(size = 10) Pageable pageable
     ) {
-        Page<WorkspaceResponse> workspaces = workspaceService.getUserContributorWorkspaces(userId, pageable);
+        Page<WorkspaceResponse> workspaces = workspaceService.getUserContributorWorkspaces(pageable);
         return ResponseEntity.ok(workspaces);
     }
 
-    @GetMapping("/{id}/user/{userId}/owned")
+    @GetMapping("/{id}")
     public ResponseEntity<WorkspaceResponse> getUserOwnedWorkspace(
-            @PathVariable UUID id,
-            @PathVariable UUID userId
+            @PathVariable UUID id
     ) {
-        WorkspaceResponse workspace = workspaceService.getUserOwnedWorkspace(userId, id);
-        return ResponseEntity.ok(workspace);
-    }
-
-    @GetMapping("/{id}/user/{userId}/contributor")
-    public ResponseEntity<WorkspaceResponse> getUserContributorWorkspace(
-            @PathVariable UUID id,
-            @PathVariable UUID userId
-    ) {
-        WorkspaceResponse workspace = workspaceService.getUserContributorWorkspace(userId, id);
+        WorkspaceResponse workspace = workspaceService.getUserWorkspace(id);
         return ResponseEntity.ok(workspace);
     }
 
