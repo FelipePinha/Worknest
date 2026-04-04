@@ -8,12 +8,14 @@ import com.pinhaDev.worknest.domain.models.User;
 import com.pinhaDev.worknest.dto.request.CreateTaskRequest;
 import com.pinhaDev.worknest.dto.request.UpdateTaskRequest;
 import com.pinhaDev.worknest.dto.request.UpdateTaskStatusRequest;
+import com.pinhaDev.worknest.dto.response.TaskResponse;
 import com.pinhaDev.worknest.repositories.TaskRepository;
 import com.pinhaDev.worknest.repositories.UserRepository;
 import com.pinhaDev.worknest.repositories.WorkspaceMemberRepository;
 import com.pinhaDev.worknest.repositories.WorkspaceRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.UUID;
 
@@ -33,29 +35,33 @@ public class TaskService {
         this.workspaceMemberRepository = workspaceMemberRepository;
     }
 
-    public Task createTask(UUID workspaceId, CreateTaskRequest request) {
+    @Transactional
+    public TaskResponse createTask(UUID workspaceId, CreateTaskRequest request) {
         var user = getLoggedUser();
         var workspace = workspaceRepository.findById(workspaceId)
                         .orElseThrow(() -> new IllegalArgumentException("Workspace não encontrada"));
 
         validateOwner(user.getId(), workspaceId);
 
-        return taskRepository.save(
-                Task.builder()
-                        .title(request.title())
-                        .description(request.description())
-                        .status(TaskStatus.TODO)
-                        .workspace(workspace)
-                        .build()
+        var task = taskRepository.save(
+                        Task.builder()
+                            .title(request.title())
+                            .description(request.description())
+                            .status(TaskStatus.TODO)
+                            .workspace(workspace)
+                            .build()
         );
+
+        return new TaskResponse(task);
     }
 
-    public Task updateTask(UUID workspaceId, UUID taskId, UpdateTaskRequest request) {
+    @Transactional
+    public TaskResponse updateTask(UUID workspaceId, UUID taskId, UpdateTaskRequest request) {
         var user = getLoggedUser();
         validateOwner(user.getId(), workspaceId);
 
-        var task = taskRepository.findById(taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task não encontrada"));
+        var task = taskRepository.findByWorkspaceIdAndId(workspaceId, taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task não existe nesta workspace"));
 
         if(request.title() != null) {
             task.setTitle(request.title());
@@ -65,17 +71,24 @@ public class TaskService {
             task.setDescription(request.description());
         }
 
-        return taskRepository.save(task);
+        taskRepository.save(task);
+
+        return new TaskResponse(task);
     }
 
+    @Transactional
     public void deleteTask(UUID workspaceId, UUID taskId) {
         var user = getLoggedUser();
         validateOwner(user.getId(), workspaceId);
 
-        taskRepository.deleteById(taskId);
+        var task = taskRepository.findByWorkspaceIdAndId(workspaceId, taskId)
+                .orElseThrow(() -> new IllegalArgumentException("Task não existe nesta workspace"));
+
+        taskRepository.delete(task);
     }
 
-    public Task updateTaskStatus(UUID workspaceId, UUID taskId, UpdateTaskStatusRequest request) {
+    @Transactional
+    public TaskResponse updateTaskStatus(UUID workspaceId, UUID taskId, UpdateTaskStatusRequest request) {
         var user = getLoggedUser();
         userExistsInWorkspace(user.getId(), workspaceId);
 
@@ -84,7 +97,7 @@ public class TaskService {
 
         task.setStatus(request.status());
 
-        return taskRepository.save(task);
+        return new TaskResponse(taskRepository.save(task));
     }
 
     private void validateOwner(UUID userId, UUID workspaceId) {
