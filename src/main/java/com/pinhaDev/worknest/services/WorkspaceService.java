@@ -10,6 +10,9 @@ import com.pinhaDev.worknest.dto.request.UpdateWorkspaceRequest;
 import com.pinhaDev.worknest.dto.response.AddContributorResponse;
 import com.pinhaDev.worknest.dto.response.WorkspaceResponse;
 import com.pinhaDev.worknest.domain.models.Workspace;
+import com.pinhaDev.worknest.exception.AuthenticationException;
+import com.pinhaDev.worknest.exception.ResourceNotFoundException;
+import com.pinhaDev.worknest.exception.UnauthorizedException;
 import com.pinhaDev.worknest.repositories.UserRepository;
 import com.pinhaDev.worknest.repositories.WorkspaceMemberRepository;
 import com.pinhaDev.worknest.repositories.WorkspaceRepository;
@@ -139,14 +142,14 @@ public class WorkspaceService {
                         workspaceId
                 )
                 .orElseThrow(() ->
-                        new IllegalArgumentException("Workspace não encontrada ou você não é membro"));
+                        new ResourceNotFoundException("Workspace não encontrada ou você não é membro"));
 
         return new WorkspaceResponse(member.getWorkspace());
     }
 
     private void validateOwner(UUID userId, UUID workspaceId) {
         workspaceMemberRepository.findByUserIdAndWorkspaceIdAndRole(userId, workspaceId, UserRole.OWNER)
-                .orElseThrow(() -> new IllegalArgumentException("Sem permissão"));
+                .orElseThrow(() -> new UnauthorizedException("Sem permissão"));
     }
 
     private User getLoggedUser() {
@@ -156,6 +159,6 @@ public class WorkspaceService {
                 .getPrincipal();
 
         return userRepository.findByEmail(userData.email()).orElseThrow(() ->
-                new IllegalArgumentException("Usuário autenticado não encontrado"));
+                new AuthenticationException("Usuário autenticado não encontrado"));
     }
 }

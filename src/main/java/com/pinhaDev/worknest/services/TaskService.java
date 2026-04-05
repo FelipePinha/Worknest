@@ -9,6 +9,9 @@ import com.pinhaDev.worknest.dto.request.CreateTaskRequest;
 import com.pinhaDev.worknest.dto.request.UpdateTaskRequest;
 import com.pinhaDev.worknest.dto.request.UpdateTaskStatusRequest;
 import com.pinhaDev.worknest.dto.response.TaskResponse;
+import com.pinhaDev.worknest.exception.AuthenticationException;
+import com.pinhaDev.worknest.exception.ResourceNotFoundException;
+import com.pinhaDev.worknest.exception.UnauthorizedException;
 import com.pinhaDev.worknest.repositories.TaskRepository;
 import com.pinhaDev.worknest.repositories.UserRepository;
 import com.pinhaDev.worknest.repositories.WorkspaceMemberRepository;
@@ -61,7 +64,7 @@ public class TaskService {
         validateOwner(user.getId(), workspaceId);
 
         var task = taskRepository.findByWorkspaceIdAndId(workspaceId, taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task não existe nesta workspace"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task não existe nesta workspace"));
 
         if(request.title() != null) {
             task.setTitle(request.title());
@@ -82,7 +85,7 @@ public class TaskService {
         validateOwner(user.getId(), workspaceId);
 
         var task = taskRepository.findByWorkspaceIdAndId(workspaceId, taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task não existe nesta workspace"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task não existe nesta workspace"));
 
         taskRepository.delete(task);
     }
@@ -93,7 +96,7 @@ public class TaskService {
         userExistsInWorkspace(user.getId(), workspaceId);
 
         var task = taskRepository.findByWorkspaceIdAndId(workspaceId, taskId)
-                .orElseThrow(() -> new IllegalArgumentException("Task não existe nesta workspace"));
+                .orElseThrow(() -> new ResourceNotFoundException("Task não existe nesta workspace"));
 
         task.setStatus(request.status());
 
@@ -102,12 +105,12 @@ public class TaskService {
 
     private void validateOwner(UUID userId, UUID workspaceId) {
         workspaceMemberRepository.findByUserIdAndWorkspaceIdAndRole(userId, workspaceId, UserRole.OWNER)
-                .orElseThrow(() -> new IllegalArgumentException("Sem permissão"));
+                .orElseThrow(() -> new UnauthorizedException("Sem permissão"));
     }
 
     private void userExistsInWorkspace(UUID userId, UUID workspaceId) {
         workspaceMemberRepository.findByUserIdAndWorkspaceId(userId, workspaceId)
-                .orElseThrow(() -> new IllegalArgumentException("Usuário não faz parte desta workspace"));
+                .orElseThrow(() -> new UnauthorizedException("Usuário não faz parte desta workspace"));
     }
 
     private User getLoggedUser() {
@@ -117,6 +120,6 @@ public class TaskService {
                 .getPrincipal();
 
         return userRepository.findByEmail(userData.email()).orElseThrow(() ->
-                new IllegalArgumentException("Usuário autenticado não encontrado"));
+                new AuthenticationException("Usuário autenticado não encontrado"));
     }
 }
