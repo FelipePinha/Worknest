@@ -1,6 +1,6 @@
 package com.pinhaDev.worknest.services;
 
-import com.pinhaDev.worknest.config.JWTUserData;
+import com.pinhaDev.worknest.config.auth.JWTUserData;
 import com.pinhaDev.worknest.domain.enums.TaskStatus;
 import com.pinhaDev.worknest.domain.enums.UserRole;
 import com.pinhaDev.worknest.domain.models.Task;

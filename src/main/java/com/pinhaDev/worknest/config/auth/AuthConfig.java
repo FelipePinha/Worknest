@@ -1,4 +1,4 @@
-package com.pinhaDev.worknest.config;
+package com.pinhaDev.worknest.config.auth;
 
 import com.pinhaDev.worknest.repositories.UserRepository;
 import org.springframework.security.core.userdetails.UserDetails;

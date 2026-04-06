@@ -1,6 +1,6 @@
 package com.pinhaDev.worknest.services;
 
-import com.pinhaDev.worknest.config.TokenConfig;
+import com.pinhaDev.worknest.config.auth.TokenConfig;
 import com.pinhaDev.worknest.dto.request.LoginRequest;
 import com.pinhaDev.worknest.dto.request.RegisterRequest;
 import com.pinhaDev.worknest.domain.models.User;
@@ -10,8 +10,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-
-import java.time.LocalDateTime;
 
 @Service
 public class AuthService {

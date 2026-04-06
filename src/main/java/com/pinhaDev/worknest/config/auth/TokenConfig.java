@@ -1,4 +1,4 @@
-package com.pinhaDev.worknest.config;
+package com.pinhaDev.worknest.config.auth;
 
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.algorithms.Algorithm;

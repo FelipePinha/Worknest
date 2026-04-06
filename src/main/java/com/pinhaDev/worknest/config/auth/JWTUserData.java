@@ -1,4 +1,4 @@
-package com.pinhaDev.worknest.config;
+package com.pinhaDev.worknest.config.auth;
 
 import lombok.Builder;
 
